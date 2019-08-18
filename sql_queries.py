@@ -9,7 +9,7 @@ time_table_drop = "DROP TABLE IF EXISTS time;"
 # CREATE TABLES
 
 songplay_table_create = ("""
-    CREATE TABLE songplay (
+    CREATE TABLE songplays (
         songplay_id int,
         start_time int,
         user_id int,
