@@ -72,7 +72,9 @@ songplay_table_insert = ("""
 user_table_insert = ("""
 """)
 
-song_table_insert = ("""
+song_table_insert = (f"""
+INSERT INTO songs
+VALUES (%s, %s, %s, %s, %s)
 """)
 
 artist_table_insert = ("""
