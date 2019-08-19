@@ -45,10 +45,10 @@ song_table_create = ("""
 artist_table_create = ("""
  CREATE TABLE artists (
         artist_id varchar,
-        name varchar,
-        location varchar,
-        latitude numeric,
-        longitude numeric
+        artist_name varchar,
+        artist_location varchar,
+        artist_latitude numeric,
+        artist_longitude numeric
     );
 """)
 
@@ -73,11 +73,16 @@ user_table_insert = ("""
 """)
 
 song_table_insert = (f"""
-INSERT INTO songs
-VALUES (%s, %s, %s, %s, %s)
+    INSERT INTO songs
+    VALUES
+    (%s, %s, %s, %s, %s)
 """)
 
 artist_table_insert = ("""
+    INSERT INTO artists
+    VALUES
+    (%s, %s, %s, %s, %s)
+
 """)
 
 
