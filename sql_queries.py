@@ -11,7 +11,7 @@ time_table_drop = "DROP TABLE IF EXISTS time;"
 songplay_table_create = ("""
     CREATE TABLE songplays (
         songplay_id int,
-        start_time int,
+        start_time timestamp,
         user_id int,
         level varchar,
         song_id varchar,
@@ -54,7 +54,7 @@ artist_table_create = ("""
 
 time_table_create = ("""
  CREATE TABLE time (
-        start_time int,
+        start_time timestamp,
         hour int,
         day int,
         week int,
@@ -87,6 +87,9 @@ artist_table_insert = ("""
 
 
 time_table_insert = ("""
+    INSERT INTO time
+    VALUES
+    (%s, %s, %s, %s, %s, %s, %s)
 """)
 
 # FIND SONGS
