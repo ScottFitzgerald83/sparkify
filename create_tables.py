@@ -1,5 +1,5 @@
 import psycopg2
-from sql_queries import create_table_queries, drop_table_queries
+from sql_queries import create_table_queries, table_list
 
 
 def create_database():
@@ -23,8 +23,8 @@ def create_database():
 
 
 def drop_tables(cur, conn):
-    for query in drop_table_queries:
-        cur.execute(query)
+    for table in table_list:
+        cur.execute(f'DROP TABLE IF EXISTS {table}')
         conn.commit()
 
 
