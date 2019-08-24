@@ -2,6 +2,7 @@ import os
 import glob
 import psycopg2
 import pandas as pd
+import time
 
 import create_tables
 from sql_queries import *
@@ -14,11 +15,10 @@ def build_df(filepath):
     :return: pandas dataframe
     """
     df = pd.read_json(filepath, lines=True)
-    df = df.where(pd.notnull(df), None)
-    return df
+    return df.where(pd.notnull(df), None)
 
 
-def process_song_data(cur, filepath):
+def stage_song_data(cur, filepath):
     """Loads json song data into staging table"""
     cur.execute(load_song_data_stage % filepath)
 
@@ -28,6 +28,11 @@ def load_song_data(cur, conn):
     cur.execute(songs_load)
     cur.execute(artists_load)
     conn.commit()
+
+
+def stage_log_data(cur, filepath):
+    """Loads json log data into staging table"""
+    cur.execute(load_log_data_stage % filepath)
 
 
 def process_log_file(cur, filepath):
@@ -84,7 +89,7 @@ def process_data(cur, conn, filepath, func):
     for i, datafile in enumerate(all_files, 1):
         func(cur, datafile)
         conn.commit()
-        print('{}/{} files processed.'.format(i, num_files))
+        # print('{}/{} files processed.'.format(i, num_files))
 
 
 def main():
@@ -92,15 +97,15 @@ def main():
     conn = psycopg2.connect("host=127.0.0.1 dbname=sparkifydb user=student password=student")
     cur = conn.cursor()
 
-    process_data(cur, conn, filepath='data/song_data', func=process_song_data)
+    process_data(cur, conn, filepath='data/song_data', func=stage_song_data)
     load_song_data(cur, conn)
-    # process_data(cur, conn, filepath='data/song_data', func=process_song_data)
-    process_data(cur, conn, filepath='data/log_data', func=process_log_file)
+    process_data(cur, conn, filepath='data/log_data', func=stage_log_data)
+    # process_data(cur, conn, filepath='data/log_data', func=process_log_file)
 
     conn.close()
 
-import time
+
 if __name__ == "__main__":
-    st = time.time()
+    # st = time.time()
     main()
-    print(f'runtime: {time.time() - st}')
+    # print(f'runtime: {time.time() - st}')

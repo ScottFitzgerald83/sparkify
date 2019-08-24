@@ -1,33 +1,9 @@
-# TABLE LIST FOR DROP STATEMENT
-table_list = ['song_data_stage',  'songplay',  'users',  'songs',  'artists',  'time']
-
 # CREATE TABLES
+table_list = ['song_data_stage', 'log_data_stage', 'songplay',  'users',  'songs',  'artists',  'time']
 
+# STAGING TABLES
 create_song_data_stage = "CREATE TABLE song_data_stage (data jsonb);"
-
-load_song_data_stage = "COPY song_data_stage FROM '%s';"
-
-songs_load = """
-INSERT INTO songs    
-    SELECT
-        data ->> 'song_id' as song_id,
-        data ->> 'title' as title,
-        data ->> 'artist_id' as artist_id,
-        (data ->> 'year')::int as year,
-        (data ->> 'duration')::numeric as duration
-    FROM song_data_stage;
-"""
-
-artists_load = """
-    INSERT INTO artists
-    SELECT
-        data ->> 'artist_id' as artist_id,
-        data ->> 'artist_name' as artist_name,
-        data ->> 'artist_location' as artist_location,
-        (data ->> 'artist_latitude')::numeric as artist_latitude,
-        (data ->> 'artist_longitude')::numeric as artist_longitude
-    FROM song_data_stage;
-"""
+create_log_data_stage = "CREATE TABLE log_data_stage (data jsonb);"
 
 songplay_table_create = ("""
     CREATE TABLE songplays (
@@ -87,6 +63,34 @@ time_table_create = ("""
 
 # INSERT RECORDS
 
+load_song_data_stage = "COPY song_data_stage FROM '%s';"
+
+# postgres doesn't like escaped double quotes in json
+# https://stackoverflow.com/questions/44997087/insert-json-into-postgresql-that-contains-quotation-marks
+load_log_data_stage = "copy log_data_stage from '%s' with (format csv, quote '|', delimiter E'\t');"
+
+songs_load = """
+INSERT INTO songs    
+    SELECT
+        data ->> 'song_id' as song_id,
+        data ->> 'title' as title,
+        data ->> 'artist_id' as artist_id,
+        (data ->> 'year')::int as year,
+        (data ->> 'duration')::numeric as duration
+    FROM song_data_stage;
+"""
+
+artists_load = """
+    INSERT INTO artists
+    SELECT
+        data ->> 'artist_id' as artist_id,
+        data ->> 'artist_name' as artist_name,
+        data ->> 'artist_location' as artist_location,
+        (data ->> 'artist_latitude')::numeric as artist_latitude,
+        (data ->> 'artist_longitude')::numeric as artist_longitude
+    FROM song_data_stage;
+"""
+
 songplay_table_insert = ("""
     INSERT INTO songplays (start_time, user_id, level, song_id, artist_id, session_id, location, 
             user_agent)
@@ -132,9 +136,20 @@ song_select = ("""
         AND s.duration = %s;
 """)
 
+# HELPERS
+
 epoch_millis_to_datetime = "select to_timestamp(%s / 1000)"
 
-# QUERY LISTS
+# QUERY AND TABLE LISTS
 
-create_table_queries = [create_song_data_stage, songplay_table_create, user_table_create, song_table_create, artist_table_create, time_table_create]
+create_table_queries = [
+    create_song_data_stage,
+    create_log_data_stage,
+    songplay_table_create,
+    user_table_create,
+    song_table_create,
+    artist_table_create,
+    time_table_create
+]
+
 load_table_queries = [songs_load, artists_load]
