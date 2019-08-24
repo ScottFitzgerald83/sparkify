@@ -98,6 +98,20 @@ songplay_table_insert = ("""
     (%s, %s, %s, %s, %s, %s, %s, %s)
 """)
 
+users_load = """
+    INSERT INTO users
+    SELECT DISTINCT
+        (data ->> 'userId')::int as userId, 
+        data ->> 'firstName' as firstName, 
+        data ->> 'lastName' as lastName, 
+        data ->> 'gender' as gender, 
+        data ->> 'level' as level
+    FROM log_data_stage
+    WHERE data ->> 'userId' != ''
+    AND data ->> 'page' = 'NextSong'
+    
+       
+"""
 user_table_insert = ("""
     INSERT INTO users
     VALUES

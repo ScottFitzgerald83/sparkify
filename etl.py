@@ -35,6 +35,12 @@ def stage_log_data(cur, filepath):
     cur.execute(load_log_data_stage % filepath)
 
 
+def load_user_data(cur, conn):
+    """Loads data from staging table into users tables"""
+    cur.execute(users_load)
+    conn.commit()
+
+
 def process_log_file(cur, filepath):
     # open log file
     log_df = build_df(filepath)
@@ -100,6 +106,7 @@ def main():
     process_data(cur, conn, filepath='data/song_data', func=stage_song_data)
     load_song_data(cur, conn)
     process_data(cur, conn, filepath='data/log_data', func=stage_log_data)
+    load_user_data(cur, conn)
     # process_data(cur, conn, filepath='data/log_data', func=process_log_file)
 
     conn.close()
