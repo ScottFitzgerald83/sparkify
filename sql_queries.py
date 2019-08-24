@@ -1,12 +1,33 @@
-# DROP TABLES
-
-songplay_table_drop = "DROP TABLE IF EXISTS songplay;"
-user_table_drop = "DROP TABLE IF EXISTS users;"
-song_table_drop = "DROP TABLE IF EXISTS songs;"
-artist_table_drop = "DROP TABLE IF EXISTS artists;"
-time_table_drop = "DROP TABLE IF EXISTS time;"
+# TABLE LIST FOR DROP STATEMENT
+table_list = ['song_data_stage',  'songplay',  'users',  'songs',  'artists',  'time']
 
 # CREATE TABLES
+
+create_song_data_stage = "CREATE TABLE song_data_stage (data jsonb);"
+
+load_song_data_stage = "COPY song_data_stage FROM '%s';"
+
+songs_load = """
+INSERT INTO songs    
+    SELECT
+        data ->> 'song_id' as song_id,
+        data ->> 'title' as title,
+        data ->> 'artist_id' as artist_id,
+        (data ->> 'year')::int as year,
+        (data ->> 'duration')::numeric as duration
+    FROM song_data_stage;
+"""
+
+artists_load = """
+    INSERT INTO artists
+    SELECT
+        data ->> 'artist_id' as artist_id,
+        data ->> 'artist_name' as artist_name,
+        data ->> 'artist_location' as artist_location,
+        (data ->> 'artist_latitude')::numeric as artist_latitude,
+        (data ->> 'artist_longitude')::numeric as artist_longitude
+    FROM song_data_stage;
+"""
 
 songplay_table_create = ("""
     CREATE TABLE songplays (
@@ -23,7 +44,7 @@ songplay_table_create = ("""
 """)
 
 user_table_create = ("""
- CREATE TABLE users (
+    CREATE TABLE users (
         user_id int,
         first_name varchar,
         last_name varchar,
@@ -33,7 +54,7 @@ user_table_create = ("""
 """)
 
 song_table_create = ("""
- CREATE TABLE songs (
+    CREATE TABLE songs (
         song_id varchar,
         title varchar,
         artist_id varchar,
@@ -43,7 +64,7 @@ song_table_create = ("""
 """)
 
 artist_table_create = ("""
- CREATE TABLE artists (
+    CREATE TABLE artists (
         artist_id varchar,
         artist_name varchar,
         artist_location varchar,
@@ -53,7 +74,7 @@ artist_table_create = ("""
 """)
 
 time_table_create = ("""
- CREATE TABLE time (
+    CREATE TABLE time (
         start_time timestamp,
         hour int,
         day int,
@@ -111,7 +132,9 @@ song_select = ("""
         AND s.duration = %s;
 """)
 
+epoch_millis_to_datetime = "select to_timestamp(%s / 1000)"
+
 # QUERY LISTS
 
-create_table_queries = [songplay_table_create, user_table_create, song_table_create, artist_table_create, time_table_create]
-drop_table_queries = [songplay_table_drop, user_table_drop, song_table_drop, artist_table_drop, time_table_drop]
+create_table_queries = [create_song_data_stage, songplay_table_create, user_table_create, song_table_create, artist_table_create, time_table_create]
+load_table_queries = [songs_load, artists_load]
