@@ -8,14 +8,14 @@ import create_tables
 from sql_queries import *
 
 
-def build_df(filepath):
-    """
-    Builds a dataframe from a given file. Converts json nulls to None instead of NaN
-    :param filepath: the path to the file being read into the dataframe
-    :return: pandas dataframe
-    """
-    df = pd.read_json(filepath, lines=True)
-    return df.where(pd.notnull(df), None)
+# def build_df(filepath):
+#     """
+#     Builds a dataframe from a given file. Converts json nulls to None instead of NaN
+#     :param filepath: the path to the file being read into the dataframe
+#     :return: pandas dataframe
+#     """
+#     df = pd.read_json(filepath, lines=True)
+#     return df.where(pd.notnull(df), None)
 
 
 def stage_song_data(cur, filepath):
@@ -35,48 +35,65 @@ def stage_log_data(cur, filepath):
     cur.execute(load_log_data_stage % filepath)
 
 
+def filter_logs(cur):
+    """Filters log data by records with page = NextSong"""
+    cur.execute(filter_log_data_stage)
+
+
+def load_time_data(cur, conn):
+    """Loads data from staging table into users tables"""
+    cur.execute(time_load)
+    conn.commit()
+
+
 def load_user_data(cur, conn):
     """Loads data from staging table into users tables"""
     cur.execute(users_load)
     conn.commit()
 
 
-def process_log_file(cur, filepath):
-    # open log file
-    log_df = build_df(filepath)
+def load_songplay_data(cur, conn):
+    """Loads data into songplays tables"""
+    cur.execute(songplays_load)
+    conn.commit()
 
-    # filter by NextSong action
-    next_song_df = log_df.loc[log_df['page'] == 'NextSong']
 
-    # convert timestamp column to datetime
-    pd.options.mode.chained_assignment = None
-    next_song_df['ts'] = pd.to_datetime(next_song_df.ts, unit='ms')
-    t = next_song_df['ts']
-
-    # insert time data records
-    time_data = pd.concat([t, t.dt.hour, t.dt.day, t.dt.week, t.dt.month, t.dt.year, t.dt.weekday], axis=1)
-    column_labels = ['start_time', 'hour', 'day', 'week', 'month', 'year', 'weekday']
-
-    time_df = pd.DataFrame(data=time_data.values, columns=column_labels)
-
-    for i, row in time_df.iterrows():
-        cur.execute(time_table_insert, list(row))
-
-    # load user table
-    user_df = next_song_df[['userId', 'firstName', 'lastName', 'gender', 'level']].copy()
-
-    # insert user records
-    for i, row in user_df.iterrows():
-        cur.execute(user_table_insert, row)
-
-    # insert songplay records
-    for index, row in next_song_df.iterrows():
-        # get songid and artistid from song and artist tables
-        results = cur.execute(song_select, (row.song, row.artist, row.length))
-        songid, artistid = results if results else None, None
-        # insert songplay record
-        songplay_data = (row.ts, row.userId, row.level, songid, artistid, row.sessionId, row.location, row.userAgent)
-        cur.execute(songplay_table_insert, songplay_data)
+# def process_log_file(cur, filepath):
+#     # open log file
+#     log_df = build_df(filepath)
+#
+#     # filter by NextSong action
+#     next_song_df = log_df.loc[log_df['page'] == 'NextSong']
+#
+#     # convert timestamp column to datetime
+#     pd.options.mode.chained_assignment = None
+#     next_song_df['ts'] = pd.to_datetime(next_song_df.ts, unit='ms')
+#     t = next_song_df['ts']
+#
+#     # insert time data records
+#     time_data = pd.concat([t, t.dt.hour, t.dt.day, t.dt.week, t.dt.month, t.dt.year, t.dt.weekday], axis=1)
+#     column_labels = ['start_time', 'hour', 'day', 'week', 'month', 'year', 'weekday']
+#
+#     time_df = pd.DataFrame(data=time_data.values, columns=column_labels)
+#
+#     for i, row in time_df.iterrows():
+#         cur.execute(time_table_insert, list(row))
+#
+#     # load user table
+#     user_df = next_song_df[['userId', 'firstName', 'lastName', 'gender', 'level']].copy()
+#
+#     # insert user records
+#     for i, row in user_df.iterrows():
+#         cur.execute(user_table_insert, row)
+#
+#     # insert songplay records
+#     for index, row in next_song_df.iterrows():
+#         # get songid and artistid from song and artist tables
+#         results = cur.execute(song_select, (row.song, row.artist, row.length))
+#         songid, artistid = results if results else None, None
+#         # insert songplay record
+#         songplay_data = (row.ts, row.userId, row.level, songid, artistid, row.sessionId, row.location, row.userAgent)
+#         cur.execute(songplay_table_insert, songplay_data)
 
 
 def process_data(cur, conn, filepath, func):
@@ -105,14 +122,19 @@ def main():
 
     process_data(cur, conn, filepath='data/song_data', func=stage_song_data)
     load_song_data(cur, conn)
+
     process_data(cur, conn, filepath='data/log_data', func=stage_log_data)
+    filter_logs(cur)
+    load_time_data(cur, conn)
     load_user_data(cur, conn)
+    load_songplay_data(cur, conn)
+
     # process_data(cur, conn, filepath='data/log_data', func=process_log_file)
 
     conn.close()
 
 
 if __name__ == "__main__":
-    # st = time.time()
+    st = time.time()
     main()
-    # print(f'runtime: {time.time() - st}')
+    print(f'runtime: {time.time() - st}')
