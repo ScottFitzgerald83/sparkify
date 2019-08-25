@@ -1,6 +1,7 @@
 import os
 import glob
 import psycopg2
+import time
 
 import create_tables
 from sql_queries import *
@@ -79,4 +80,6 @@ def main():
 
 
 if __name__ == "__main__":
+    t = time.time()
     main()
+    print(time.time() - t)
