@@ -10,3 +10,8 @@ I'll flesh this out more as the project progresses.
 ## Example queries
 [TODO] [Optional] Provide example queries and results for song play analysis.
 
+
+In order for the `COPY` command to work, the user doing ETL (`student`) must have  `pg_read_server_files` permissions.
+
+I was able to accomplish this by logging in as a super and running this:
+```grant pg_read_server_files to student;```
