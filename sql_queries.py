@@ -1,9 +1,9 @@
 # DROP TABLES LIST
-tables = ['song_data_stage', 'log_data_stage', 'log_data_stage_raw', 'songplay', 'users', 'songs', 'artists', 'time']
+tables = ['song_data_stage', 'log_data_stage', 'songplay', 'users', 'songs', 'artists', 'time']
 
 # STAGING TABLES
 song_data_stage_create = "CREATE TABLE song_data_stage (data jsonb);"
-log_data_stage_create = "CREATE TABLE log_data_stage_raw (data jsonb);"
+log_data_stage_create = "CREATE TABLE log_data_stage (data jsonb);"
 
 # DATA (PRODUCTION) TABLES CREATE STATEMENTS
 songs_create = ("""
@@ -64,20 +64,13 @@ songplays_create = ("""
 
 # INSERT RECORDS
 
-# Load song data from provided json file into staging table
+# Load song data from json file into staging table
 load_song_data_stage = "COPY song_data_stage FROM '%s';"
 
-# Load all log data from provided json file into staging table
+# Load log data from json into staging table and filter by page = NextSong
 # postgres doesn't like escaped quotes in json: https://stackoverflow.com/questions/44997087/
-load_log_data_stage = "copy log_data_stage_raw from '%s' with (format csv, quote '|', delimiter E'\t');"
-
-# filter log data staging table for records where page = NextSong and write to new table
-filter_log_data_stage = """
-    DROP TABLE IF EXISTS log_data_stage;
-    CREATE TABLE log_data_stage (data jsonb);
-    INSERT INTO log_data_stage
-    SELECT * FROM log_data_stage_raw WHERE data ->> 'page' = 'NextSong';
-"""
+load_log_data_stage = "copy log_data_stage from '%s' with (format csv, quote '|', delimiter E'\t');"
+filter_log_data_stage = "delete from log_data_stage where data ->> 'page' != 'NextSong'"
 
 # Load song data from staging table into songs
 songs_load = """
@@ -151,12 +144,5 @@ songplays_load = """
 """
 # QUERY AND TABLE LISTS
 
-create_table_queries = [
-    song_data_stage_create,
-    log_data_stage_create,
-    songs_create,
-    artists_create,
-    time_create,
-    users_create,
-    songplays_create
-]
+create_table_queries = [song_data_stage_create, log_data_stage_create, songs_create, artists_create, time_create,
+                        users_create, songplays_create]
