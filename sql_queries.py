@@ -3,7 +3,13 @@ table_list = ['song_data_stage', 'log_data_stage', 'songplay',  'users',  'songs
 
 # STAGING TABLES
 create_song_data_stage = "CREATE TABLE song_data_stage (data jsonb);"
-create_log_data_stage = "CREATE TABLE log_data_stage (data jsonb);"
+create_log_data_stage = "CREATE TABLE log_data_stage_raw (data jsonb);"
+filter_log_data_stage = """
+    DROP TABLE IF EXISTS log_data_stage;
+    CREATE TABLE log_data_stage (data jsonb);
+    INSERT INTO log_data_stage
+    SELECT * FROM log_data_stage_raw WHERE data ->> 'page' = 'NextSong';
+"""
 
 songplay_table_create = ("""
     CREATE TABLE songplays (
@@ -67,7 +73,7 @@ load_song_data_stage = "COPY song_data_stage FROM '%s';"
 
 # postgres doesn't like escaped double quotes in json
 # https://stackoverflow.com/questions/44997087/insert-json-into-postgresql-that-contains-quotation-marks
-load_log_data_stage = "copy log_data_stage from '%s' with (format csv, quote '|', delimiter E'\t');"
+load_log_data_stage = "copy log_data_stage_raw from '%s' with (format csv, quote '|', delimiter E'\t');"
 
 songs_load = """
 INSERT INTO songs    
@@ -100,6 +106,7 @@ songplay_table_insert = ("""
 
 users_load = """
     INSERT INTO users
+    -- same user may have multiple logs, so ignore duplicate user rows here
     SELECT DISTINCT
         (data ->> 'userId')::int as userId, 
         data ->> 'firstName' as firstName, 
@@ -107,11 +114,49 @@ users_load = """
         data ->> 'gender' as gender, 
         data ->> 'level' as level
     FROM log_data_stage
+    -- ignore nulls/users without ids and filter by nextSong
     WHERE data ->> 'userId' != ''
     AND data ->> 'page' = 'NextSong'
-    
-       
 """
+
+time_load = """
+    insert into time
+    select 
+      ts,
+      extract(hour from ts)::int as hour,
+      extract(day from ts)::int as day,
+      extract(week from ts)::int as week,
+      extract(month from ts)::int as month,
+      extract(year from ts)::int as year,
+      extract(isodow from ts)::int as weekday
+    -- below subquery extracts ts from log data json
+    -- first we filter by page = nextSong and then convert ts to timestamp
+    from (
+      SELECT 
+        (to_timestamp((data ->> 'ts')::bigint/ 1000))::timestamp ts 
+      from log_data_stage
+      WHERE data ->> 'page' = 'NextSong'
+    ) next_song_ts
+"""
+
+songplays_load = """
+    INSERT INTO songplays (start_time, user_id, LEVEL, song_id, artist_id, session_id, LOCATION, user_agent)
+    SELECT
+      to_timestamp((data ->> 'ts')::bigint/ 1000)::timestamp,
+      (data ->> 'userId')::int,
+      data ->> 'level' AS level,
+      s.song_id,
+      a.artist_id,
+      (data ->> 'sessionId')::int as session_id,
+      data ->> 'location' AS song,
+      data ->> 'userAgent' AS artist
+    FROM log_data_stage
+    left join songs s on s.title = data ->> 'song'
+    left join artists a on artist_name = data ->> 'artist'
+"""
+
+
+
 user_table_insert = ("""
     INSERT INTO users
     VALUES
@@ -151,8 +196,6 @@ song_select = ("""
 """)
 
 # HELPERS
-
-epoch_millis_to_datetime = "select to_timestamp(%s / 1000)"
 
 # QUERY AND TABLE LISTS
 
