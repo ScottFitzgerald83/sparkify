@@ -25,9 +25,10 @@ The `sparkify` database consists of the following tables:
 [TODO] State and justify your database schema design and ETL pipeline.
 This section explains the table structures and keys.
 ### Songs table
-A collection of unique songs found in the `song_data` JSON. 
-Name: `songs`
-|column|type|constraints|description|
+Table name: `songs`
+Description: A collection of unique songs found across all the `song_data` JSON logs.
+
+|Column|Type|Modifiers|Description|
 |-|-|-|-|
 | `song_id`   | character varying |  not null primary key  |A string value identifying the unique song, e.g. `SONHOTT12A8C13493C`|
 | `title`     | character varying |  not null   |The song's title, e.g. `Something Girls`|
@@ -37,9 +38,33 @@ Name: `songs`
 
 
 ### Artists table
-### users table
-### time table
-### songplays table
+Table name: `artists`
+
+| Column           | Type              | Modifiers   | Description |
+|-|-|-|-|
+| `artist_id`        | character varying |  not null  primary key |A string value identifying the artist, e.g. `AR9AWNF1187B9AB0B4`
+| `artist_name`     | character varying |  not null   | The artist's name, e.g. `Kenny G featuring Daryl Hall`
+| `artist_location`  | character varying |             |Artist's city and state, `Seattle, Washington USA`
+| `artist_latitude`  | double precision  |             |Artist's latitude, if provided, e.g., `32.74863`
+| `artist_longitude` | double precision  |             |Artist's longitude, if provided, e.g., `-97.32925`
+
+|column|type|constraints|description|
+|-|-|-|-|
+### Users table
+Table name: `users`
+Description: 
+|column|type|constraints|description|
+|-|-|-|-|
+### Time table
+Table name: `time`
+Description: 
+|column|type|constraints|description|
+|-|-|-|-|
+### Songplays table
+Table name: `songplays`
+Description: 
+|column|type|constraints|description|
+|-|-|-|-|
 
 
 ## Requirements
@@ -77,5 +102,3 @@ Once Postgres is installed, you'll need to connect to it issue these commands. T
 
 ## Example queries
 [TODO] [Optional] Provide example queries and results for song play analysis.
-
-
