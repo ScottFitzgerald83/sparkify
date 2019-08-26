@@ -140,6 +140,16 @@ Description: Song and user data for each individual songplay
 | 2             | 2018-11-22 09:04:03 | 23        | free    | <null>    | <null>      | 351          | Raleigh, NC                         | "Mozilla/5.0 (iPhone; CPU iPhone OS 7_1_1 like Mac OS X) AppleWebKit/537.51.2 (KHTML, like Gecko) Version/7.0 Mobile/11D201 Safari/9537.53" |
 | 3             | 2018-11-29 16:27:31 | 80        | paid    | <null>    | <null>      | 1065         | Portland-South Portland, ME         | "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_4) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/36.0.1985.143 Safari/537.36"                  |
 
+### ETL walkthrough
+* There are two types of data files stored in the `/data/` directory, both in multi-line JSON format:
+	* `song_data`, which consists of song and artist data
+	* `log_data`, which consists of user and songplay data
+* `create_tables.py` creates the `sparkifydb`, the data tables from the above section, and two staging tables used for ETL: `song_data_stage` and `log_data_stage`. Each table has a single column with a data type of `jsonb`
+* The `etl.py` script executes a series of SQL statements that can be found in `sql_queries.py` that:
+	* parse the JSON in these columns 
+	* perform transformations or filtering as necessary
+	* load the desired JSON values into the proper target tables
+
 ## Requirements
 This project was written in Python3 using `psycopg2` and Postgres 11. The python requirements are listed in `requirements.txt`. It's best to install these packages in a virtual environment (see below links):
 
