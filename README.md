@@ -20,13 +20,13 @@ The `sparkify` database consists of the following tables:
 
 |Table name|Purpose|
 |-|-|
-|songs|Details about each song found in the song data|
-|artists|Details about each song found in the song data|
-|users|Details about each song found in the log data|
-|time|A collection of date parts from each songplay start time|
-|songplays|Details about each song played, including both song, artist, and user data|
-|song_data_stage|Staging table used during ETL to read in song data from JSON|
-|log_data_stage|Staging table used during ETL to read in log data from JSON|
+|`songs`|Details about each song found in the song data|
+|`artists`|Details about each song found in the song data|
+|`users`|Details about each song found in the log data|
+|`time`|A collection of date parts from each songplay start time|
+|`songplays`|Details about each song played, including both song, artist, and user data|
+|`song_data_stage`|Staging table used during ETL to read in song data from JSON|
+|`log_data_stage`|Staging table used during ETL to read in log data from JSON|
 
 ## Schema explanation and rationale
 Below are an explanation of the database and a walkthrough of how the ETL works.
@@ -49,11 +49,11 @@ Description: A collection of unique songs found across all the `song_data` JSON 
 ##### Table structure
 |Column|Type|Modifiers|Description|
 |-|-|-|-|
-| `song_id`   | character varying |  not null primary key  |A string value identifying the unique song, e.g. `SONHOTT12A8C13493C`|
-| `title`     | character varying |  not null   |The song's title, e.g. `Something Girls`|
-| `artist_id` | character varying |  not null   |A string value identifying the artist, e.g. `AR7G5I41187FB4CE6C`|
-| `year`      | integer           |             |The year the song was released, e.g. `1982`|
-| `duration`  | double precision  |             |Song length in seconds, e.g. `233.40363`|
+| `song_id`   | `character varying` |  `not null` `primary key`  |A string value identifying the unique song, e.g. `SONHOTT12A8C13493C`|
+| `title`     | `character varying` |  `not null`   |The song's title, e.g. `Something Girls`|
+| `artist_id` | `character varying` |  `not null`   |A string value identifying the artist, e.g. `AR7G5I41187FB4CE6C`|
+| `year`      | `integer`           |             |The year the song was released, e.g. `1982`|
+| `duration`  | `double precision`  |             |Song length in seconds, e.g. `233.40363`|
 ##### Example
 | song_id            | title           | artist_id          | year   | duration   |
 |-|-|-|-|-|
@@ -70,11 +70,11 @@ Description: A collection of each unique artist found across the `song_data` JSO
 ##### Table structure
 | Column           | Type              | Modifiers   | Description |
 |-|-|-|-|
-| `artist_id`        | character varying |  not null  primary key |A string value identifying the artist, e.g. `AR9AWNF1187B9AB0B4`
-| `artist_name`     | character varying |  not null   | The artist's name, e.g. `Kenny G featuring Daryl Hall`
-| `artist_location`  | character varying |             |Artist's city and state, `Seattle, Washington USA`
-| `artist_latitude`  | double precision  |             |Artist's latitude, if provided, e.g., `32.74863`
-| `artist_longitude` | double precision  |             |Artist's longitude, if provided, e.g., `-97.32925`
+| `artist_id`        | `character varying` |  `not null`  `primary key` |A string value identifying the artist, e.g. `AR9AWNF1187B9AB0B4`
+| `artist_name`     | `character varying` |  `not null`   | The artist's name, e.g. `Kenny G featuring Daryl Hall`
+| `artist_location`  | `character varying` |             |Artist's city and state, `Seattle, Washington USA`
+| `artist_latitude`  | `double precision`  |             |Artist's latitude, if provided, e.g., `32.74863`
+| `artist_longitude` | `double precision`  |             |Artist's longitude, if provided, e.g., `-97.32925`
 
 ##### Example
 | artist_id          | artist_name                  | artist_location         | artist_latitude   | artist_longitude   |
@@ -91,11 +91,11 @@ Description: Data about each user found in the songplay `log_data` JSON, includi
 ##### Table structure
 | Column     | Type              | Modifiers   | Description|
 |-|-|-|-
-| `user_id`    | integer           |  not null primary key  |The id associated with the user 
-| `first_name` | character varying |             |User's first name
-| `last_name`  | character varying |             |User's last name
-| `gender`     | character varying |             |User-provided gender 
-| `level`      | character varying |             |The user's pricing tier
+| `user_id`    | `integer`           |  `not null primary key`  |The id associated with the user 
+| `first_name` | `character varying` |             |User's first name
+| `last_name`  | `character varying` |             |User's last name
+| `gender`     | `character varying` |             |User-provided gender 
+| `level`      | `character varying` |             |The user's pricing tier
 
 ##### Example
 | user_id   | first_name   | last_name   | gender   | level   |
@@ -112,13 +112,13 @@ Description: timestamps of user songplays broken down into numeric values of the
 ##### Table structure
 | Column     | Type                        | Modifiers   | Description
 |-|-|-|-|
-| `start_time` | timestamp without time zone |  not null   | The start time of a songplay
-| `hour`       | integer                     |             | Numeric value of hour 
-| `day`        | integer                     |             | Numeric value of day 
-| `week`       | integer                     |             | Numeric value of week 
-| `month`      | integer                     |             | Numeric value of month
-| `year`       | integer                     |             | Numeric value of year
-| `weekday`    | integer                     |             | Numeric value of weekday
+| `start_time` | `timestamp without time zone` |  `not null`   | The start time of a songplay
+| `hour`       | `integer`                     |             | Numeric value of hour 
+| `day`        | `integer`                     |             | Numeric value of day 
+| `week`       | `integer`                     |             | Numeric value of week 
+| `month`      | `integer`                     |             | Numeric value of month
+| `year`       | `integer`                     |             | Numeric value of year
+| `weekday`    | `integer`                     |             | Numeric value of weekday
 ##### Example
 | start_time          | hour   | day   | week   | month   | year   | weekday   |
 |-|-|-|-|-|-|-|
@@ -133,15 +133,15 @@ Description: Song and user data for each individual songplay
 ##### Table structure
 |Column|Type|Modifiers|description|
 |-|-|-|-|
-| songplay_id | serial                     |  not null default  | An incrementing index to track songplays
-| start_time  | timestamp without time zone |  not null                                                        | The datetime the songplay started
-| user_id     | integer                     |  not null                                                        | The ID of the user who initiated the songplay
-| level       | character varying           |                                                                  | The user's pricing tier
-| song_id     | character varying           |                                                                  | The ID of the song being listened to 
-| artist_id   | character varying           |                                                                  | The ID of the artist being listened to 
-| session_id  | integer                     |  not null                                                        | The user's session ID
-| location    | character varying           |                                                                  | The user's location during songplay
-| user_agent  | character varying           |                                                                  | The user agent that triggered the songplay
+| `songplay_id` | `serial`                     |  `not null` `default nextval('songplays_songplay_id_seq'::regclass)`  | An incrementing index to track songplays
+| `start_time`  | `timestamp without time zone` |  `not null`                                                        | The datetime the songplay started
+| `user_id`     | `integer`                     |  `not null`                                                        | The ID of the user who initiated the songplay
+| `level`       | `character varying`           |                                                                  | The user's pricing tier
+| `song_id`     | `character varying`           |                                                                  | The ID of the song being listened to 
+| `artist_id`   | `character varying`           |                                                                  | The ID of the artist being listened to 
+| `session_id`  | `integer`                     |  `not null`                                                        | The user's session ID
+| `location`    | `character varying`           |                                                                  | The user's location during songplay
+| `user_agent`  | `character varying`           |                                                                  | The user agent that triggered the songplay
 
 ##### Example
 
