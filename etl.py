@@ -71,7 +71,13 @@ def main():
     conn.set_session(autocommit=True)
     cur = conn.cursor()
 
-    process_data(cur, filepath='data/song_data', func=stage_song_data)
+    try:
+        process_data(cur, filepath='data/song_data', func=stage_song_data)
+    except psycopg2.errors.InsufficientPrivilege as e:
+        print(str(e).split('HINT')[0])
+        print("HINT: You must GRANT student pg_read_server_files permissions in order to read the log files.")
+        print("Try `GRANT pg_read_server_files TO STUDENT`")
+
     process_data(cur, filepath='data/log_data', func=stage_log_data)
     load_tables(cur)
 
