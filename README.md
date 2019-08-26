@@ -183,7 +183,7 @@ This section will walk you through setting up your environment, the database, an
 6. Follow the Postgres steps below
 
 ### Postgres setup
-### Project prerequisites
+#### Project prerequisites
 This project assumes there is a database named `studentdb` and a [Postgres role](https://www.postgresql.org/docs/current/sql-createrole.html) named `student`. Furthermore **the `student` role must have the following Postgres permissions** in order to create the `sparkifydb` and read the data from the json files:
 * `CREATEDB`
 * `pg_read_server_files`
