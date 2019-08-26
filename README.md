@@ -30,7 +30,7 @@ This section explains the table structures and primary keys.
 ### Songs table
 Table name: `songs`
 Description: A collection of unique songs found across all the `song_data` JSON logs.
-
+#### Table structure
 |Column|Type|Modifiers|Description|
 |-|-|-|-|
 | `song_id`   | character varying |  not null primary key  |A string value identifying the unique song, e.g. `SONHOTT12A8C13493C`|
@@ -38,11 +38,18 @@ Description: A collection of unique songs found across all the `song_data` JSON 
 | `artist_id` | character varying |  not null   |A string value identifying the artist, e.g. `AR7G5I41187FB4CE6C`|
 | `year`      | integer           |             |The year the song was released, e.g. `1982`|
 | `duration`  | double precision  |             |Song length in seconds, e.g. `233.40363`|
-
+#### Example
+| song_id            | title           | artist_id          | year   | duration   |
+|-|-|-|-|-|
+| SONHOTT12A8C13493C | Something Girls | AR7G5I41187FB4CE6C | 1982   | 233.40363  |
+| SOIAZJW12AB01853F1 | Pink World      | AR8ZCNI1187B9A069B | 1984   | 269.81832  |
+| SOFSOCN12A8C143F5D | Face the Ashes  | ARXR32B1187FB57099 | 2007   | 209.60608  |
 
 ### Artists table
 Table name: `artists`
 Description: A collection of each unique artist found across the `song_data` JSON, including their location, if available.
+
+#### Table structure
 | Column           | Type              | Modifiers   | Description |
 |-|-|-|-|
 | `artist_id`        | character varying |  not null  primary key |A string value identifying the artist, e.g. `AR9AWNF1187B9AB0B4`
@@ -51,6 +58,12 @@ Description: A collection of each unique artist found across the `song_data` JSO
 | `artist_latitude`  | double precision  |             |Artist's latitude, if provided, e.g., `32.74863`
 | `artist_longitude` | double precision  |             |Artist's longitude, if provided, e.g., `-97.32925`
 
+#### Example
+| artist_id          | artist_name                  | artist_location         | artist_latitude   | artist_longitude   |
+|-|-|-|-|-|
+| ARLTWXK1187FB5A3F8 | King Curtis     | Fort Worth, TX    | 32.74863          | -97.32925          |
+| AR3JMC51187B9AE49D | Backstreet Boys | Orlando, FL       | 28.53823          | -81.37739          |
+| ARAJPHH1187FB5566A | The Shangri-Las | Queens, NY        | 40.7038           | -73.83168          |
 ### Users table
 Table name: `users`
 Description: Data about each user found in the songplay `log_data` JSON, including gender and pricing tier.
@@ -63,6 +76,13 @@ Description: Data about each user found in the songplay `log_data` JSON, includi
 | `last_name`  | character varying |             |User's last name
 | `gender`     | character varying |             |User-provided gender 
 | `level`      | character varying |             |The user's pricing tier
+
+#### Example
+| user_id   | first_name   | last_name   | gender   | level   |
+|-|-|-|-|-|
+| 2         | Jizelle      | Benjamin    | F        | free    |
+| 3         | Isaac        | Valdez      | M        | free    |
+| 4         | Alivia       | Terrell     | F        | free    |
 
 ### Time table
 Table name: `time`
@@ -87,6 +107,7 @@ Description: timestamps of user songplays broken down into numeric values of the
 ### Songplays table
 Table name: `songplays`
 Description: Song and user data for each individual songplay
+#### Table structure
 |Column|Type|Modifiers|description|
 |-|-|-|-|
 | songplay_id | serial                     |  not null default  | An incrementing index to track songplays
@@ -99,7 +120,7 @@ Description: Song and user data for each individual songplay
 | location    | character varying           |                                                                  | The user's location during songplay
 | user_agent  | character varying           |                                                                  | The user agent that triggered the songplay
 #### Example
-+---------------+---------------------+-----------+---------+-----------+-------------+--------------+-------------------------------------+---------------------------------------------------------------------------------------------------------------------------------------------+
+
 | songplay_id   | start_time          | user_id   | level   | song_id   | artist_id   | session_id   | location                            | user_agent                                                                                                                                  |
 |-|-|-|-|-|-|-|-|-|
 | 1             | 2018-11-16 05:23:00 | 80        | paid    | <null>    | <null>      | 620          | Portland-South Portland, ME         | "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_4) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/36.0.1985.143 Safari/537.36"                  |
