@@ -6,7 +6,7 @@ song_data_stage_create = "CREATE TABLE song_data_stage (data jsonb);"
 log_data_stage_create = "CREATE TABLE log_data_stage (data jsonb);"
 
 # DATA (PRODUCTION) TABLES CREATE STATEMENTS
-songs_create = ("""
+songs_create = """
     CREATE TABLE songs (
         song_id VARCHAR PRIMARY KEY,
         title VARCHAR NOT NULL,
@@ -14,9 +14,9 @@ songs_create = ("""
         year INT,
         duration FLOAT
     );
-""")
+"""
 
-artists_create = ("""
+artists_create = """
     CREATE TABLE artists (
         artist_id VARCHAR PRIMARY KEY,
         artist_name VARCHAR NOT NULL,
@@ -24,9 +24,9 @@ artists_create = ("""
         artist_latitude FLOAT,
         artist_longitude FLOAT
     );
-""")
+"""
 
-time_create = ("""
+time_create = """
     CREATE TABLE time (
         start_time timestamp PRIMARY KEY,
         hour INT,
@@ -36,9 +36,9 @@ time_create = ("""
         year INT,
         weekday INT
     );
-""")
+"""
 
-users_create = ("""
+users_create = """
     CREATE TABLE users (
         user_id INT PRIMARY KEY,
         first_name VARCHAR,
@@ -46,9 +46,9 @@ users_create = ("""
         gender VARCHAR,
         level VARCHAR
     );
-""")
+"""
 
-songplays_create = ("""
+songplays_create = """
     CREATE TABLE songplays (
         songplay_id SERIAL PRIMARY KEY,
         start_time TIMESTAMP WITHOUT TIME ZONE NOT NULL,
@@ -60,7 +60,7 @@ songplays_create = ("""
         location VARCHAR,
         user_agent VARCHAR
     );
-""")
+"""
 
 # INSERT RECORDS
 
@@ -137,13 +137,13 @@ time_load = """
         (to_timestamp((data ->> 'ts')::bigint/ 1000))::timestamp ts 
       FROM log_data_stage
     ) next_song_ts
-    ON CONFLICT DO NOTHING;
+    ON CONFLICT DO NOTHING; -- shouldn't happen since PK column is SERIAL and excluded from INSERT here  
 """
 
 # Load songplays data from staging table, joining on songs and artists
 songplays_load = """
     INSERT INTO songplays (start_time, user_id, LEVEL, song_id, artist_id, session_id, LOCATION, user_agent)
-    SELECT
+    SELECT DISTINCT 
       to_timestamp((data ->> 'ts')::bigint/ 1000)::timestamp,
       (data ->> 'userId')::INT,
       data ->> 'level' AS level,
@@ -155,6 +155,7 @@ songplays_load = """
     FROM log_data_stage
     LEFT JOIN songs s ON s.title = data ->> 'song'
     LEFT JOIN artists a ON artist_name = data ->> 'artist'
+    ON CONFLICT DO NOTHING;
 """
 # QUERY AND TABLE LISTS
 
