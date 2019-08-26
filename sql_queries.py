@@ -6,7 +6,7 @@ song_data_stage_create = "CREATE TABLE song_data_stage (data jsonb);"
 log_data_stage_create = "CREATE TABLE log_data_stage (data jsonb);"
 
 # DATA (PRODUCTION) TABLES CREATE STATEMENTS
-songs_create = ("""
+songs_create = """
     CREATE TABLE songs (
         song_id VARCHAR PRIMARY KEY,
         title VARCHAR NOT NULL,
@@ -14,9 +14,9 @@ songs_create = ("""
         year INT,
         duration FLOAT
     );
-""")
+"""
 
-artists_create = ("""
+artists_create = """
     CREATE TABLE artists (
         artist_id VARCHAR PRIMARY KEY,
         artist_name VARCHAR NOT NULL,
@@ -24,9 +24,9 @@ artists_create = ("""
         artist_latitude FLOAT,
         artist_longitude FLOAT
     );
-""")
+"""
 
-time_create = ("""
+time_create = """
     CREATE TABLE time (
         start_time timestamp PRIMARY KEY,
         hour INT,
@@ -36,9 +36,9 @@ time_create = ("""
         year INT,
         weekday INT
     );
-""")
+"""
 
-users_create = ("""
+users_create = """
     CREATE TABLE users (
         user_id INT PRIMARY KEY,
         first_name VARCHAR,
@@ -46,12 +46,12 @@ users_create = ("""
         gender VARCHAR,
         level VARCHAR
     );
-""")
+"""
 
-songplays_create = ("""
+songplays_create = """
     CREATE TABLE songplays (
-        songplay_id serial PRIMARY KEY,
-        start_time timestamp NOT NULL,
+        songplay_id SERIAL PRIMARY KEY,
+        start_time TIMESTAMP WITHOUT TIME ZONE NOT NULL,
         user_id INT NOT NULL,
         level VARCHAR,
         song_id VARCHAR,
@@ -60,28 +60,28 @@ songplays_create = ("""
         location VARCHAR,
         user_agent VARCHAR
     );
-""")
+"""
 
 # INSERT RECORDS
 
-# Load song data from json file into staging table
-load_song_data_stage = "COPY song_data_stage FROM '%s';"
-
-# Load log data from json into staging table and filter by page = NextSong
+# Load song and log data from json file into staging tables
 # postgres doesn't like escaped quotes in json: https://stackoverflow.com/questions/44997087/
+load_song_data_stage = "COPY song_data_stage FROM '%s';"
 load_log_data_stage = "COPY log_data_stage FROM '%s' WITH (FORMAT CSV, QUOTE '|', DELIMITER E'\t');"
+# filter by page = NextSong
 filter_log_data_stage = "DELETE FROM log_data_stage WHERE data ->> 'page' != 'NextSong'"
 
 # Load song data from staging table into songs
 songs_load = """
     INSERT INTO songs    
-    SELECT
+    SELECT DISTINCT
         data ->> 'song_id' AS song_id,
         data ->> 'title' AS title,
         data ->> 'artist_id' AS artist_id,
         (data ->> 'year')::INT AS year,
         (data ->> 'duration')::FLOAT AS duration
-    FROM song_data_stage;
+    FROM song_data_stage
+    ON CONFLICT DO NOTHING;
 """
 
 # Load artist data from staging table into artists
@@ -93,7 +93,8 @@ artists_load = """
         data ->> 'artist_location' AS artist_location,
         (data ->> 'artist_latitude')::FLOAT AS artist_latitude,
         (data ->> 'artist_longitude')::FLOAT AS artist_longitude
-    FROM song_data_stage;
+    FROM song_data_stage
+    ON CONFLICT DO NOTHING;
 """
 
 # Load unique users from staging table into users
@@ -136,12 +137,13 @@ time_load = """
         (to_timestamp((data ->> 'ts')::bigint/ 1000))::timestamp ts 
       FROM log_data_stage
     ) next_song_ts
+    ON CONFLICT DO NOTHING; -- shouldn't happen since PK column is SERIAL and excluded from INSERT here  
 """
 
 # Load songplays data from staging table, joining on songs and artists
 songplays_load = """
     INSERT INTO songplays (start_time, user_id, LEVEL, song_id, artist_id, session_id, LOCATION, user_agent)
-    SELECT
+    SELECT DISTINCT 
       to_timestamp((data ->> 'ts')::bigint/ 1000)::timestamp,
       (data ->> 'userId')::INT,
       data ->> 'level' AS level,
@@ -153,6 +155,7 @@ songplays_load = """
     FROM log_data_stage
     LEFT JOIN songs s ON s.title = data ->> 'song'
     LEFT JOIN artists a ON artist_name = data ->> 'artist'
+    ON CONFLICT DO NOTHING;
 """
 # QUERY AND TABLE LISTS
 
