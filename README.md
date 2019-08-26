@@ -185,6 +185,83 @@ Once Postgres is installed, you'll need to connect to it issue these commands. T
 2. Run the ETL pipeline to load the tables: `python3 etl.py`
 
 ## Example queries
-[TODO] [Optional] Provide example queries and results for song play analysis.
+There is a sample notebook in this project located at `/notebooks/sample_queries.ipynb`. Inside this notebook are the following queries.
 
+### Top users
+The ten users who listened to the most songs in this dataset
+#### Query logic
+```
+select user_id, count(*) num_songplays
+from songplays 
+group by 1 order by 2 desc 
+limit 10;
+```
+#### Results
+```
++-----------+-----------------+
+| user_id   | num_songplays   |
+|-----------+-----------------|
+| 49        | 689             |
+| 80        | 665             |
+| 97        | 557             |
+| 15        | 463             |
+| 44        | 397             |
+| 29        | 346             |
+| 24        | 321             |
+| 73        | 289             |
+| 88        | 270             |
+| 36        | 248             |
++-----------+-----------------+
+```
+### Top  locations
+The cities that listened to the most songs
+```
+select location as location, count(*) num_songplays
+from songplays 
+group by 1 order by 2 desc 
+limit 10;
+```
+```
++-----------------------------------------+-----------------+
+| location                                    | num_songplays   |
+|-----------------------------------------+-----------------|
+| San Francisco-Oakland-Hayward, CA       | 691             |
+| Portland-South Portland, ME             | 665             |
+| Lansing-East Lansing, MI                | 557             |
+| Chicago-Naperville-Elgin, IL-IN-WI      | 475             |
+| Atlanta-Sandy Springs-Roswell, GA       | 456             |
+| Waterloo-Cedar Falls, IA                | 397             |
+| Lake Havasu City-Kingman, AZ            | 321             |
+| Tampa-St. Petersburg-Clearwater, FL     | 307             |
+| San Jose-Sunnyvale-Santa Clara, CA      | 292             |
+| Sacramento--Roseville--Arden-Arcade, CA | 270             |
++-----------------------------------------+-----------------+
+```
+
+### Top user agents
+The most popular user agents used for streaming songs, by count of songs played. Survey says our users really like Firefox :)
+#### Query logic
+```
+select user_agent, count(*) num_songplays
+from songplays 
+group by 1 order by 2 desc 
+limit 10;
+```
+#### Results
+```
++-------------------------------------------------------------------------------------------------------------------------------------------+-----------------+
+| user_agent                                                                                                                                | num_songplays   |
+|-------------------------------------------------------------------------------------------------------------------------------------------+-----------------|
+| "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_4) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/36.0.1985.143 Safari/537.36"                | 971             |
+| "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_4) AppleWebKit/537.78.2 (KHTML, like Gecko) Version/7.0.6 Safari/537.78.2"                   | 708             |
+| Mozilla/5.0 (Windows NT 5.1; rv:31.0) Gecko/20100101 Firefox/31.0                                                                         | 696             |
+| "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Ubuntu Chromium/36.0.1985.125 Chrome/36.0.1985.125 Safari/537.36" | 577             |
+| "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/37.0.2062.94 Safari/537.36"                                | 573             |
+| Mozilla/5.0 (Macintosh; Intel Mac OS X 10.9; rv:31.0) Gecko/20100101 Firefox/31.0                                                         | 443             |
+| "Mozilla/5.0 (Windows NT 6.3; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/36.0.1985.143 Safari/537.36"                           | 427             |
+| "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/36.0.1985.125 Safari/537.36"                           | 419             |
+| "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_4) AppleWebKit/537.77.4 (KHTML, like Gecko) Version/7.0.5 Safari/537.77.4"                   | 319             |
+| Mozilla/5.0 (Windows NT 6.1; WOW64; rv:31.0) Gecko/20100101 Firefox/31.0                                                                  | 310             |
++-------------------------------------------------------------------------------------------------------------------------------------------+-----------------+
+```
 
