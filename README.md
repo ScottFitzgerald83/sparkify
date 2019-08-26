@@ -5,7 +5,12 @@ This is project 1 of the [Udacity Data Engineer nanodegree](https://www.udacity.
 From the project description:
 >A startup called Sparkify wants to analyze the data they've been collecting on songs and user activity on their new music streaming app. The analytics team is particularly interested in understanding what songs users are listening to. Currently, they don't have an easy way to query their data, which resides in a directory of JSON logs on user activity on the app, as well as a directory with JSON metadata on the songs in their app.
 
-That said, the main project goal are to provide the analytics team a way to easily query the songs that users are listening to.
+That said, the main project goal are to provide the analytics team a way to easily query the songs that users are listening to. This README seeks to convey:
+1. The purpose of the database
+2. Schema explanation and rationale, plus ETL explanation
+3. Requirements
+4. Getting started with the data
+5. Sample queries
 
 ## Purpose of the database
 
@@ -21,16 +26,22 @@ The `sparkify` database consists of the following tables:
 |songplays|Details about each song played, including both song, artist, and user data|
 |song_data_stage|Staging table used during ETL to read in song data from JSON|
 |log_data_stage|Staging table used during ETL to read in log data from JSON|
+
 ## Schema explanation and rationale
-[TODO] State and justify your database schema design and ETL pipeline.
+Below are an explanation of the database and a walkthrough of how the ETL works.
 
-#### Schema design
-This section explains the table structures and primary keys.
+### Schema design
+This section explains the table structures and how they relate to one another. Below is a list of each table along with the following:
+1. Table name and description
+2. Columns and data types for each table
+3. Column constraints, if any
+4. An explanation of the data in each column
+5. An example query from each table
 
-### Songs table
+#### Songs table
 Table name: `songs`
 Description: A collection of unique songs found across all the `song_data` JSON logs.
-#### Table structure
+##### Table structure
 |Column|Type|Modifiers|Description|
 |-|-|-|-|
 | `song_id`   | character varying |  not null primary key  |A string value identifying the unique song, e.g. `SONHOTT12A8C13493C`|
@@ -38,18 +49,18 @@ Description: A collection of unique songs found across all the `song_data` JSON 
 | `artist_id` | character varying |  not null   |A string value identifying the artist, e.g. `AR7G5I41187FB4CE6C`|
 | `year`      | integer           |             |The year the song was released, e.g. `1982`|
 | `duration`  | double precision  |             |Song length in seconds, e.g. `233.40363`|
-#### Example
+##### Example
 | song_id            | title           | artist_id          | year   | duration   |
 |-|-|-|-|-|
 | SONHOTT12A8C13493C | Something Girls | AR7G5I41187FB4CE6C | 1982   | 233.40363  |
 | SOIAZJW12AB01853F1 | Pink World      | AR8ZCNI1187B9A069B | 1984   | 269.81832  |
 | SOFSOCN12A8C143F5D | Face the Ashes  | ARXR32B1187FB57099 | 2007   | 209.60608  |
 
-### Artists table
+#### Artists table
 Table name: `artists`
 Description: A collection of each unique artist found across the `song_data` JSON, including their location, if available.
 
-#### Table structure
+##### Table structure
 | Column           | Type              | Modifiers   | Description |
 |-|-|-|-|
 | `artist_id`        | character varying |  not null  primary key |A string value identifying the artist, e.g. `AR9AWNF1187B9AB0B4`
@@ -58,17 +69,17 @@ Description: A collection of each unique artist found across the `song_data` JSO
 | `artist_latitude`  | double precision  |             |Artist's latitude, if provided, e.g., `32.74863`
 | `artist_longitude` | double precision  |             |Artist's longitude, if provided, e.g., `-97.32925`
 
-#### Example
+##### Example
 | artist_id          | artist_name                  | artist_location         | artist_latitude   | artist_longitude   |
 |-|-|-|-|-|
 | ARLTWXK1187FB5A3F8 | King Curtis     | Fort Worth, TX    | 32.74863          | -97.32925          |
 | AR3JMC51187B9AE49D | Backstreet Boys | Orlando, FL       | 28.53823          | -81.37739          |
 | ARAJPHH1187FB5566A | The Shangri-Las | Queens, NY        | 40.7038           | -73.83168          |
-### Users table
+#### Users table
 Table name: `users`
 Description: Data about each user found in the songplay `log_data` JSON, including gender and pricing tier.
 
-#### Table structure
+##### Table structure
 | Column     | Type              | Modifiers   | Description|
 |-|-|-|-
 | `user_id`    | integer           |  not null primary key  |The id associated with the user 
@@ -77,18 +88,18 @@ Description: Data about each user found in the songplay `log_data` JSON, includi
 | `gender`     | character varying |             |User-provided gender 
 | `level`      | character varying |             |The user's pricing tier
 
-#### Example
+##### Example
 | user_id   | first_name   | last_name   | gender   | level   |
 |-|-|-|-|-|
 | 2         | Jizelle      | Benjamin    | F        | free    |
 | 3         | Isaac        | Valdez      | M        | free    |
 | 4         | Alivia       | Terrell     | F        | free    |
 
-### Time table
+#### Time table
 Table name: `time`
 Description: timestamps of user songplays broken down into numeric values of the various date part units from that timestamp
 
-#### Table structure
+##### Table structure
 | Column     | Type                        | Modifiers   | Description
 |-|-|-|-|
 | `start_time` | timestamp without time zone |  not null   | The start time of a songplay
@@ -98,16 +109,17 @@ Description: timestamps of user songplays broken down into numeric values of the
 | `month`      | integer                     |             | Numeric value of month
 | `year`       | integer                     |             | Numeric value of year
 | `weekday`    | integer                     |             | Numeric value of weekday
-#### Example
+##### Example
 | start_time          | hour   | day   | week   | month   | year   | weekday   |
 |-|-|-|-|-|-|-|
 | 2018-11-15 18:04:48 | 18     | 15    | 46     | 11      | 2018   | 4         |
 | 2018-11-16 04:06:55 | 4      | 16    | 46     | 11      | 2018   | 5         |
 
-### Songplays table
+#### Songplays table
 Table name: `songplays`
 Description: Song and user data for each individual songplay
-#### Table structure
+
+##### Table structure
 |Column|Type|Modifiers|description|
 |-|-|-|-|
 | songplay_id | serial                     |  not null default  | An incrementing index to track songplays
@@ -119,22 +131,23 @@ Description: Song and user data for each individual songplay
 | session_id  | integer                     |  not null                                                        | The user's session ID
 | location    | character varying           |                                                                  | The user's location during songplay
 | user_agent  | character varying           |                                                                  | The user agent that triggered the songplay
-#### Example
+
+##### Example
 
 | songplay_id   | start_time          | user_id   | level   | song_id   | artist_id   | session_id   | location                            | user_agent                                                                                                                                  |
 |-|-|-|-|-|-|-|-|-|
 | 1             | 2018-11-16 05:23:00 | 80        | paid    | <null>    | <null>      | 620          | Portland-South Portland, ME         | "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_4) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/36.0.1985.143 Safari/537.36"                  |
 | 2             | 2018-11-22 09:04:03 | 23        | free    | <null>    | <null>      | 351          | Raleigh, NC                         | "Mozilla/5.0 (iPhone; CPU iPhone OS 7_1_1 like Mac OS X) AppleWebKit/537.51.2 (KHTML, like Gecko) Version/7.0 Mobile/11D201 Safari/9537.53" |
 | 3             | 2018-11-29 16:27:31 | 80        | paid    | <null>    | <null>      | 1065         | Portland-South Portland, ME         | "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_4) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/36.0.1985.143 Safari/537.36"                  |
-| 4             | 2018-11-30 04:54:05 | 36        | paid    | <null>    | <null>      | 998          | Janesville-Beloit, WI               | "Mozilla/5.0 (Windows NT 5.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/36.0.1985.143 Safari/537.36"                                    |
 
 ## Requirements
+This project was written in Python3 using `psycopg2` and Postgres 11. The python requirements are listed in `requirements.txt`. It's best to install these packages in a virtual environment (see below links):
+
 * Python3 
 * A Python virtual environment. See [Python docs](https://packaging.python.org/guides/installing-using-pip-and-virtual-environments/#targetText=To%20create%20a%20virtual%20environment,project's%20directory%20and%20run%20virtualenv.&targetText=The%20second%20argument%20is%20the,installation%20in%20the%20env%20folder.) for details.
 * Postgres installation will vary by OS, see http://postgresguide.com/setup/install.html
 * [Optional] [`pgcli`](https://www.pgcli.com) to interact with Postgres locally
 
-The python requirements are listed in `requirements.txt`. It's best to install these packages in a virtual environment (see below)
 
 ## Getting started
 This section will walk you through setting up your environment, the database, and running the ETL pipeline to create and populate the tables. To explore the data, see the Sample Queries section at the bottom.
@@ -163,4 +176,5 @@ Once Postgres is installed, you'll need to connect to it issue these commands. T
 
 ## Example queries
 [TODO] [Optional] Provide example queries and results for song play analysis.
+
 
