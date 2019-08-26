@@ -166,7 +166,9 @@ This project was written in Python3 using `psycopg2` and Postgres 11. The python
 
 * Python3 
 * A Python virtual environment. See [Python docs](https://packaging.python.org/guides/installing-using-pip-and-virtual-environments/#targetText=To%20create%20a%20virtual%20environment,project's%20directory%20and%20run%20virtualenv.&targetText=The%20second%20argument%20is%20the,installation%20in%20the%20env%20folder.) for details.
-* Postgres installation will vary by OS, see http://postgresguide.com/setup/install.html
+* `psycopg2`, which can be installed with pip
+* Postgres: [installation will vary by OS](http://postgresguide.com/setup/install.html)
+* [Optional]  `jupyter` and `ipython-sql` if you want to run the sample query notebook locally
 * [Optional] [`pgcli`](https://www.pgcli.com) to interact with Postgres locally
 
 
@@ -176,8 +178,9 @@ This section will walk you through setting up your environment, the database, an
 1. Clone this repository: `git clone git@github.com:ScottFitzgerald83/sparkify.git`
 2. Navigate to the project directory: `cd sparkify`
 3. Create and activate a virtual environment (venv): `python3 -m venv venv; . venv/bin/activate`
-4. Use pip to install the requirements in your venv: `pip3 install -r requirements.txt`
-5. Follow the Postgres steps below
+4. Use pip to install `psycopg2`: `pip install psycopg2`
+5. [Optional] If using a Jupyter notebook to explore data, use pip to install the rest of the requirements in your venv: `pip3 install -r requirements.txt`
+6. Follow the Postgres steps below
 
 ### Postgres setup
 This project assumes there is a database named `studentdb` and a [Postgres role](https://www.postgresql.org/docs/current/sql-createrole.html) named `student`. Furthermore the `student` role must have the following Postgres permissions in order to create the `sparkifydb` and read the data from the json files:
@@ -194,6 +197,13 @@ Once Postgres is installed, you'll need to connect to it issue these commands. T
 ### Running the ETL
 1. Run create_tables to create the `sparkifydb` database and tables: `python3 create_tables.py`
 2. Run the ETL pipeline to load the tables: `python3 etl.py`
+
+### Running sample queries
+If you want to start up a local Jupyter notebook to run the sample queries, or otherwise explore the data, you'll need the packages listed in `requirements.txt`. 
+1. Ensure your python `venv` is activated and you're in the project's root directory.
+2. Install all requirements with `pip install -r requirements.txt`.
+3. Type `jupyter notebook` into the terminal. Jupyter should launch a browser window with the project.
+4. Click into the `notebooks/` folder in the browser, find `sample_queries.ipynb`, and query away!
 
 ## Example queries
 There is a sample notebook in this project located at `/notebooks/sample_queries.ipynb`. Inside this notebook are the following queries.
@@ -275,4 +285,5 @@ limit 10;
 | Mozilla/5.0 (Windows NT 6.1; WOW64; rv:31.0) Gecko/20100101 Firefox/31.0                                                                  | 310             |
 +-------------------------------------------------------------------------------------------------------------------------------------------+-----------------+
 ```
+
 
