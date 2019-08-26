@@ -40,7 +40,7 @@ time_create = ("""
 
 users_create = ("""
     CREATE TABLE users (
-        user_id int,
+        user_id int primary key,
         first_name varchar,
         last_name varchar,
         gender varchar,
@@ -97,15 +97,27 @@ artists_load = """
 """
 
 # Load unique users from staging table into users
+# For users with multiple levels, selects the latest level
 users_load = """
     INSERT INTO users
-    SELECT DISTINCT
-        (data ->> 'userId')::int as userId, 
-        data ->> 'firstName' as firstName, 
-        data ->> 'lastName' as lastName, 
-        data ->> 'gender' as gender, 
-        data ->> 'level' as level
-    FROM log_data_stage
+    SELECT
+        DISTINCT ON (user_id) user_id,
+        first_name,
+        last_name,
+        gender,
+        level
+    FROM (
+        SELECT
+            data ->> 'ts' as ts,
+            (data ->> 'userId')::int as user_id,
+            data ->> 'firstName' as first_name,
+            data ->> 'lastName' as last_name,
+            data ->> 'gender' as gender,
+            data ->> 'level' as level
+        FROM log_data_stage
+        ORDER BY ts DESC
+    ) users_temp
+    ON CONFLICT (user_id) DO UPDATE SET level = EXCLUDED.level
 """
 
 # Extract, convert, and split log timestamps to load into time table
