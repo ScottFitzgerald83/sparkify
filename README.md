@@ -62,7 +62,9 @@ Description: A collection of unique songs found across all the `song_data` JSON 
 | SOFSOCN12A8C143F5D | Face the Ashes  | ARXR32B1187FB57099 | 2007   | 209.60608  |
 
 #### Artists table
+
 Table name: `artists`
+
 Description: A collection of each unique artist found across the `song_data` JSON, including their location, if available.
 
 ##### Table structure
