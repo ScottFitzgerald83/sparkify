@@ -28,7 +28,7 @@ artists_create = ("""
 
 time_create = ("""
     CREATE TABLE time (
-        start_time timestamp,
+        start_time timestamp primary key,
         hour int,
         day int,
         week int,
@@ -111,7 +111,7 @@ users_load = """
 # Extract, convert, and split log timestamps to load into time table
 time_load = """
     INSERT into TIME
-    SELECT
+    SELECT DISTINCT
       ts,
       extract(hour from ts)::int as hour,
       extract(day from ts)::int as day,
