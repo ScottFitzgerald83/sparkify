@@ -3,4 +3,3 @@ venv/
 .ipynb_checkpoints/
 __pycache__/
 create_tables.ipynb
-test.ipynb
