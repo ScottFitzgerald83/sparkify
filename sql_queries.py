@@ -18,11 +18,11 @@ songs_create = ("""
 
 artists_create = ("""
     CREATE TABLE artists (
-        artist_id varchar,
-        artist_name varchar,
+        artist_id varchar primary key,
+        artist_name varchar not null,
         artist_location varchar,
-        artist_latitude numeric,
-        artist_longitude numeric
+        artist_latitude float,
+        artist_longitude float
     );
 """)
 
@@ -87,7 +87,7 @@ songs_load = """
 # Load artist data from staging table into artists
 artists_load = """
     INSERT INTO artists
-    SELECT
+    SELECT DISTINCT 
         data ->> 'artist_id' as artist_id,
         data ->> 'artist_name' as artist_name,
         data ->> 'artist_location' as artist_location,
