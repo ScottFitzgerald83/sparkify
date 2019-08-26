@@ -83,7 +83,9 @@ Description: A collection of each unique artist found across the `song_data` JSO
 | AR3JMC51187B9AE49D | Backstreet Boys | Orlando, FL       | 28.53823          | -81.37739          |
 | ARAJPHH1187FB5566A | The Shangri-Las | Queens, NY        | 40.7038           | -73.83168          |
 #### Users table
+
 Table name: `users`
+
 Description: Data about each user found in the songplay `log_data` JSON, including gender and pricing tier.
 
 ##### Table structure
@@ -104,6 +106,7 @@ Description: Data about each user found in the songplay `log_data` JSON, includi
 
 #### Time table
 Table name: `time`
+
 Description: timestamps of user songplays broken down into numeric values of the various date part units from that timestamp
 
 ##### Table structure
@@ -124,6 +127,7 @@ Description: timestamps of user songplays broken down into numeric values of the
 
 #### Songplays table
 Table name: `songplays`
+
 Description: Song and user data for each individual songplay
 
 ##### Table structure
