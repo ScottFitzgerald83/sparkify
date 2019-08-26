@@ -8,11 +8,11 @@ log_data_stage_create = "CREATE TABLE log_data_stage (data jsonb);"
 # DATA (PRODUCTION) TABLES CREATE STATEMENTS
 songs_create = ("""
     CREATE TABLE songs (
-        song_id varchar,
-        title varchar,
-        artist_id varchar,
+        song_id varchar primary key,
+        title varchar not null,
+        artist_id varchar not null,
         year int,
-        duration numeric
+        duration float
     );
 """)
 
