@@ -183,10 +183,12 @@ This section will walk you through setting up your environment, the database, an
 6. Follow the Postgres steps below
 
 ### Postgres setup
+### Project prerequisites
 This project assumes there is a database named `studentdb` and a [Postgres role](https://www.postgresql.org/docs/current/sql-createrole.html) named `student`. Furthermore **the `student` role must have the following Postgres permissions** in order to create the `sparkifydb` and read the data from the json files:
 * `CREATEDB`
 * `pg_read_server_files`
 
+#### Setup
 Once Postgres is installed, you'll need to connect to it issue these commands. This can be done with either `psql` or `pgcli`
 1. Ensure Postgres is running
 2. Connect to the default database (`postgres`): `pgcli postgres://localhost:5432/postgres`
