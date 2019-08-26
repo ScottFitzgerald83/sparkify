@@ -30,7 +30,7 @@ This project assumes there is a database named `studentdb` and a [Postgres role]
 Once Postgres is installed, you'll need to connect to it issue these commands. This can be done with either `psql` or `pgcli`
 1. Ensure Postgres is running
 2. Connect to the default database, `postgres`: `pgcli postgres://localhost:5432/postgres`
-3. Create the `student` role with login permissions: `CREATE ROLE student WITH LOGIN` 
+3. Create the `student` role with login and createdb permissions: `CREATE ROLE student WITH LOGIN CREATEDB` 
 4. Grant the file read permissions: `GRANT pg_read_server_files TO STUDENT`
 5. Create the `studentdb` database: `CREATE DATABASE studentdb`
 
