@@ -17,6 +17,7 @@ That said, the main project goal are to provide the analytics team a way to easi
 The purpose of this database is to create a logical structure for Sparkify to store transformed logs containing song and user data. These tables provide a structure that enable Sparkify's analysts to query this data.
 
 The `sparkify` database consists of the following tables:
+
 |Table name|Purpose|
 |-|-|
 |songs|Details about each song found in the song data|
@@ -32,6 +33,7 @@ Below are an explanation of the database and a walkthrough of how the ETL works.
 
 ### Schema design
 This section explains the table structures and how they relate to one another. Below is a list of each table along with the following:
+
 1. Table name and description
 2. Columns and data types for each table
 3. Column constraints, if any
@@ -39,8 +41,11 @@ This section explains the table structures and how they relate to one another. B
 5. An example query from each table
 
 #### Songs table
+
 Table name: `songs`
+
 Description: A collection of unique songs found across all the `song_data` JSON logs.
+
 ##### Table structure
 |Column|Type|Modifiers|Description|
 |-|-|-|-|
