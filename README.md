@@ -7,11 +7,34 @@ I'll flesh this out more as the project progresses.
 ## Schema explanation and rationale
 [TODO] State and justify your database schema design and ETL pipeline.
 
+## Requirements
+* Python3 
+* A Python virtual environment. See [Python docs](https://packaging.python.org/guides/installing-using-pip-and-virtual-environments/#targetText=To%20create%20a%20virtual%20environment,project's%20directory%20and%20run%20virtualenv.&targetText=The%20second%20argument%20is%20the,installation%20in%20the%20env%20folder.) for details.
+* Postgres installation will vary by OS, see http://postgresguide.com/setup/install.html
+* [Optional] [`pgcli`](https://www.pgcli.com) to interact with Postgres locally
+
+The python requirements are listed in `requirements.txt`. It's best to install these packages in a virtual environment (see below)
+
+## Getting started
+1. Clone this repository: `git clone git@github.com:ScottFitzgerald83/sparkify.git`
+2. Navigate to the project directory: `cd sparkify`
+3. Create and activate a virtual environment (venv): `python3 -m venv venv; . venv/bin/activate`
+4. Use pip to install the requirements in your venv: `pip install -r requirements.txt`
+5. Follow the Postgres steps in the Postgres setup section
+
+## Postgres setup
+This project assumes there is a database named `studentdb` and a [Postgres role](https://www.postgresql.org/docs/current/sql-createrole.html) named `student`. Furthermore the `student` role must have the following Postgres permissions in order to create the `sparkifydb` and read the data from the json files:
+* `CREATEDB`
+* `pg_read_server_files`
+
+Once Postgres is installed, you'll need to connect to it issue these commands. This can be done with either `psql` or `pgcli`
+1. Ensure Postgres is running
+2. Connect to the default database, `postgres`: `pgcli postgres://localhost:5432/postgres`
+3. Create the `student` role with login permissions: `CREATE ROLE student WITH LOGIN` 
+4. Grant the file read permissions: `GRANT pg_read_server_files TO STUDENT`
+5. Create the `studentdb` database: `CREATE DATABASE studentdb`
+
+
 ## Example queries
 [TODO] [Optional] Provide example queries and results for song play analysis.
 
-
-In order for the `COPY` command to work, the user doing ETL (`student`) must have  `pg_read_server_files` permissions.
-
-I was able to accomplish this by logging in as a super and running this:
-```grant pg_read_server_files to student;```
