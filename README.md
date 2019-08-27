@@ -6,10 +6,10 @@ From the Udacity project description:
 >A startup called Sparkify wants to analyze the data they've been collecting on songs and user activity on their new music streaming app. The analytics team is particularly interested in understanding what songs users are listening to. Currently, they don't have an easy way to query their data, which resides in a directory of JSON logs on user activity on the app, as well as a directory with JSON metadata on the songs in their app.
 ## Goals
 The main project goal are to provide the analytics team a way to easily query the songs that users are listening to. This README seeks to convey:
-1. [The purpose of the database]([https://github.com/ScottFitzgerald83/sparkify/#purpose-of-the-database](https://github.com/ScottFitzgerald83/sparkify/#purpose-of-the-database))
-2. [Schema explanation and rationale]([https://github.com/ScottFitzgerald83/sparkify/#schema-explanation-and-rationale](https://github.com/ScottFitzgerald83/sparkify/#schema-explanation-and-rationale)), plus [ETL explanation]([https://github.com/ScottFitzgerald83/sparkify/#etl-walkthrough](https://github.com/ScottFitzgerald83/sparkify/#etl-walkthrough))
+1. [The purpose of the database](https://github.com/ScottFitzgerald83/sparkify/#purpose-of-the-database)
+2. [Schema explanation and rationale](https://github.com/ScottFitzgerald83/sparkify/#schema-explanation-and-rationale) plus [ETL explanation](https://github.com/ScottFitzgerald83/sparkify/#etl-walkthrough)
 3. [Requirements](https://github.com/ScottFitzgerald83/sparkify/#requirements)
-4. [Getting started with the data]([https://github.com/ScottFitzgerald83/sparkify/#getting-started](https://github.com/ScottFitzgerald83/sparkify/#getting-started))
+4. [Getting started with the data](https://github.com/ScottFitzgerald83/sparkify/#getting-started)
 5. [Sample queries](https://github.com/ScottFitzgerald83/sparkify/#example-queries)
 
 ## Purpose of the database
